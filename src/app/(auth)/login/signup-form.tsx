@@ -28,6 +28,7 @@ const formSchema = z.object({
   }),
   gender: z.enum(["male", "female"] as const),
 });
+
 export function SignupForm() {
   const { toast } = useToast();
   const router = useRouter();

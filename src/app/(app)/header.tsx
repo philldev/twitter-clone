@@ -1,10 +1,10 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getProfile } from "@/lib/profile";
+import { getUserProfile } from "@/lib/profile";
 import { getUserInitials } from "@/lib/utils";
 import Link from "next/link";
 
 export async function Header() {
-  const profile = await getProfile();
+  const profile = await getUserProfile();
 
   return (
     <div className="h-[65px] border-b px-4 flex items-center justify-between">
