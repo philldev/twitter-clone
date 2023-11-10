@@ -14,7 +14,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -28,7 +27,7 @@ import { useState } from "react";
 function NewTweet() {
   const [open, setOpen] = useState(false);
   return (
-    <div className="fixed p-4 bottom-0 border-t inset-x-0 w-full">
+    <div className="fixed p-4 bg-background bottom-0 border-t inset-x-0 w-full">
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
           <Button className="w-full">New Tweet</Button>

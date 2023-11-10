@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { getUserInitials } from "@/lib/utils";
 import { formatRelative } from "date-fns";
+import Link from "next/link";
 
 type ITweets = Awaited<ReturnType<typeof getTweets>>;
 type ITweet = ITweets[number];
@@ -31,8 +32,6 @@ function Tweets({ userId }: { userId?: string }) {
         cursorId,
       });
 
-      console.log({ data });
-
       if (data.length) {
         setEnableFetchMore(true);
         setCursorId(data.at(-1)?.id);
@@ -42,6 +41,10 @@ function Tweets({ userId }: { userId?: string }) {
           setTweets(data);
         }
       } else {
+        toast({
+          title: "Opps",
+          description: "No more tweets to load :(",
+        });
         setEnableFetchMore(false);
       }
     } catch (error) {
@@ -55,7 +58,7 @@ function Tweets({ userId }: { userId?: string }) {
   };
 
   const fetchMore = () => {
-    fetchTweets(userId, cursorId);
+    fetchTweets(userId, cursorId, true);
   };
 
   useEffect(() => {
@@ -77,15 +80,20 @@ function Tweets({ userId }: { userId?: string }) {
   }, [userId]);
 
   return (
-    <div className="p-4">
+    <div className="px-4">
       <div>
         {tweets.map((t) => (
           <TweetCard key={t.id} tweet={t} />
         ))}
       </div>
-      {tweets.length > 9 && (
+      {tweets.length > 8 && (
         <div className="pt-4">
-          <Button onClick={fetchMore} disabled={loading || !enableFetchMore}>
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={fetchMore}
+            disabled={loading || !enableFetchMore}
+          >
             Load More
           </Button>
         </div>
@@ -97,14 +105,20 @@ function Tweets({ userId }: { userId?: string }) {
 function TweetCard({ tweet }: { tweet: ITweet }) {
   return (
     <div className="flex gap-2 py-3">
-      <Avatar className="shrink-0">
-        <AvatarImage src={tweet.user.profile?.avatar_url || ""} />
-        <AvatarFallback>{getUserInitials(tweet.user.username)}</AvatarFallback>
-      </Avatar>
+      <Link href={`/profile/${tweet.user.username}`}>
+        <Avatar className="w-8 h-8 shrink-0">
+          <AvatarImage src={tweet.user.profile?.avatar_url || ""} />
+          <AvatarFallback>
+            {getUserInitials(tweet.user.username)}
+          </AvatarFallback>
+        </Avatar>
+      </Link>
       <div className="flex-1 flex flex-col gap-1">
         <div className="flex text-xs items-center justify-between gap-4">
-          <div className="font-bold">@{tweet.user.username}</div>
-          <div className="text-muted-foreground">
+          <Link href={`/profile/${tweet.user.username}`} className="font-bold">
+            @{tweet.user.username}
+          </Link>
+          <div className="text-muted-foreground text-[0.6rem]">
             {formatRelative(tweet.createdAt, new Date())}
           </div>
         </div>

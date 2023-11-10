@@ -8,7 +8,9 @@ export async function Header() {
 
   return (
     <div className="h-[65px] border-b px-4 flex items-center justify-between">
-      <AppLogo />
+      <Link href="/">
+        <AppLogo />
+      </Link>
       <Link href={`/profile/${profile?.user.username}`}>
         <Avatar>
           <AvatarImage src={profile?.avatar_url!} />

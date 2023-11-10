@@ -20,7 +20,7 @@ export async function getTweets({
         }
       : undefined,
     orderBy: {
-      createdAt: "asc",
+      createdAt: "desc",
     },
     skip: cursorId ? 1 : 0,
     take: 9,
