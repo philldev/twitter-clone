@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import React from "react";
 import { Header } from "./header";
 import { SessionProvider } from "./session-provider";
+import { NewTweet } from "./new-tweet";
 
 export default async function Layout({
   children,
@@ -15,9 +16,10 @@ export default async function Layout({
 
   return (
     <SessionProvider user={user}>
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col pb-[70px]">
         <Header />
         {children}
+        <NewTweet />
       </div>
     </SessionProvider>
   );

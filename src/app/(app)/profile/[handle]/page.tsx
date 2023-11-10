@@ -11,6 +11,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ProfileForm } from "./profile-form";
+import { Tweets } from "@/components/tweets";
 
 export default async function Page({ params }: { params: { handle: string } }) {
   const { handle } = params;
@@ -56,6 +57,7 @@ export default async function Page({ params }: { params: { handle: string } }) {
       <div className="px-4">
         <EditProfile />
       </div>
+      <Tweets userId={profile.userId} />
     </div>
   );
 }
