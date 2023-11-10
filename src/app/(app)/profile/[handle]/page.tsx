@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getProfile } from "@/lib/profile";
+import { getProfile, getUserProfile } from "@/lib/profile";
 import { cn, getUserInitials } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,6 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { ProfileForm } from "./profile-form";
 
 export default async function Page({ params }: { params: { handle: string } }) {
   const { handle } = params;
@@ -59,7 +60,11 @@ export default async function Page({ params }: { params: { handle: string } }) {
   );
 }
 
-function EditProfile() {
+async function EditProfile() {
+  const profile = await getUserProfile();
+
+  if (!profile) throw new Error("User not found!");
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -72,6 +77,12 @@ function EditProfile() {
             Make changes to your profile here.
           </DialogDescription>
         </DialogHeader>
+        <ProfileForm
+          userId={profile.userId}
+          defaultValues={{
+            bio: profile.bio ?? "",
+          }}
+        />
       </DialogContent>
     </Dialog>
   );

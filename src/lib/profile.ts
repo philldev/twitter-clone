@@ -1,3 +1,5 @@
+"use server";
+
 import prisma from "./prisma";
 import { getCurrentUser } from "./session";
 
@@ -39,4 +41,23 @@ export async function getProfile(username: string) {
   });
 
   return profile;
+}
+
+export async function updateProfile(input: {
+  bio?: string | undefined;
+  userId: string;
+}) {
+  try {
+    await prisma.profile.update({
+      data: {
+        bio: input.bio,
+      },
+      where: {
+        userId: input.userId,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
 }

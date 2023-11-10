@@ -1,3 +1,5 @@
+"use client";
+
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import {
@@ -5,36 +7,61 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { updateProfile } from "@/lib/profile";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
-  }),
   bio: z
     .string()
     .min(1, "Bio must be at least 1 characters.")
-    .max(255, "Bio cannot be longer than 255 characters."),
+    .max(255, "Bio cannot be longer than 255 characters.")
+    .optional(),
 });
 
-export function SignupForm() {
+export function ProfileForm({
+  defaultValues,
+  userId,
+}: {
+  userId: string;
+  defaultValues?: z.infer<typeof formSchema>;
+}) {
   const { toast } = useToast();
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      username: "",
+    defaultValues: defaultValues ?? {
       bio: "",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      await updateProfile({
+        ...values,
+        userId,
+      });
+
+      router.refresh();
+
+      toast({
+        title: "Success",
+        description: "Profile updated!",
+      });
+    } catch (error) {
+      console.log(error);
+      toast({
+        title: "Error",
+        description: "Something went wrong!",
+      });
+    }
     return;
   }
 
@@ -43,23 +70,12 @@ export function SignupForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
-          name="username"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input placeholder="Username" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
           name="bio"
           render={({ field }) => (
             <FormItem>
+              <FormLabel>Bio</FormLabel>
               <FormControl>
-                <Textarea placeholder="Password" {...field} />
+                <Textarea placeholder="Bio" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
