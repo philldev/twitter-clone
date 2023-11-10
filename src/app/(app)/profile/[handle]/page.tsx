@@ -22,14 +22,14 @@ export default async function Page({ params }: { params: { handle: string } }) {
 
   return (
     <div className="flex flex-col gap-4 py-6">
-      <div className="px-4 flex gap-8">
+      <div className="px-4 flex flex-col items-center gap-8">
         <Avatar className="w-[110px] h-[110px] shrink-0">
           <AvatarImage src={profile?.avatar_url!} />
           <AvatarFallback>
             {getUserInitials(profile?.user.username || "")}
           </AvatarFallback>
         </Avatar>
-        <div className="flex justify-between flex-1 text-sm items-center">
+        <div className="flex w-full justify-between flex-1 text-sm items-center">
           <div className="text-center">
             <div className="font-bold">Tweets</div>
             <div>0</div>
