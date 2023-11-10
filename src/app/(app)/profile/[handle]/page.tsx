@@ -34,8 +34,6 @@ export default async function Page({ params }: { params: { handle: string } }) {
   const followerCount = await getFollowerCount(profile.userId);
   const followingCount = await getFollowingCount(profile.userId);
 
-  console.log({ isFollowing });
-
   return (
     <div className="flex flex-col gap-4 py-6">
       <div className="px-4 flex flex-col items-center gap-8">
@@ -77,9 +75,11 @@ export default async function Page({ params }: { params: { handle: string } }) {
           <div className="text-muted-foreground">Following</div>
         </Link>
       </div>
-      <div className="px-4">
-        <EditProfile />
-      </div>
+      {currentUser.uid === profile.userId && (
+        <div className="px-4">
+          <EditProfile />
+        </div>
+      )}
       <Tweets userId={profile.userId} />
     </div>
   );

@@ -1,12 +1,5 @@
 "use client";
 
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,30 +15,6 @@ import { z } from "zod";
 import { Textarea } from "@/components/ui/textarea";
 import { useRouter } from "next/navigation";
 import { createTweet } from "@/lib/tweets";
-import { useState } from "react";
-
-function NewTweet() {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="fixed p-4 bg-background bottom-0 border-t inset-x-0 w-full">
-      <Sheet open={open} onOpenChange={setOpen}>
-        <SheetTrigger asChild>
-          <Button className="w-full">New Tweet</Button>
-        </SheetTrigger>
-        <SheetContent side="bottom">
-          <SheetHeader>
-            <SheetTitle>New Tweet</SheetTitle>
-          </SheetHeader>
-          <NewTweetForm
-            onSuccess={() => {
-              setOpen(false);
-            }}
-          />
-        </SheetContent>
-      </Sheet>
-    </div>
-  );
-}
 
 const formSchema = z.object({
   content: z
@@ -56,10 +25,8 @@ const formSchema = z.object({
 
 function NewTweetForm({
   defaultValues,
-  onSuccess,
 }: {
   defaultValues?: z.infer<typeof formSchema>;
-  onSuccess: () => void;
 }) {
   const { toast } = useToast();
   const router = useRouter();
@@ -76,7 +43,6 @@ function NewTweetForm({
       await createTweet(values.content);
 
       router.refresh();
-      onSuccess();
 
       window.dispatchEvent(new CustomEvent("create-tweet"));
 
@@ -96,7 +62,10 @@ function NewTweetForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-4">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-4 border-b pb-4"
+      >
         <FormField
           control={form.control}
           name="content"
@@ -104,7 +73,7 @@ function NewTweetForm({
             <FormItem>
               <FormControl>
                 <Textarea
-                  className="resize-none flex h-36"
+                  className="resize-none flex h-20 shadow-none focus:outline-none focus-visible:ring-0 rounded-none border-none"
                   placeholder="Whats on your mind...??"
                   {...field}
                 />
@@ -113,12 +82,14 @@ function NewTweetForm({
             </FormItem>
           )}
         />
-        <Button disabled={form.formState.isSubmitting} type="submit">
-          {form.formState.isSubmitting ? "Tweetinggg..." : "Tweet"}
-        </Button>
+        <div className="flex justify-end px-4">
+          <Button disabled={form.formState.isSubmitting} type="submit">
+            {form.formState.isSubmitting ? "Tweetinggg..." : "Tweet"}
+          </Button>
+        </div>
       </form>
     </Form>
   );
 }
 
-export { NewTweet };
+export { NewTweetForm };

@@ -80,7 +80,13 @@ function Tweets({ userId }: { userId?: string }) {
   }, [userId]);
 
   return (
-    <div className="px-4">
+    <div className="px-4 py-4">
+      {loading && (
+        <div className="flext text-muted-foreground">Loading tweets...</div>
+      )}
+      {tweets.length === 0 && !loading && (
+        <div className="flext text-muted-foreground">No tweets yet!</div>
+      )}
       <div>
         {tweets.map((t) => (
           <TweetCard key={t.id} tweet={t} />

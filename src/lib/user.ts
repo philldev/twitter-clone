@@ -1,5 +1,6 @@
 "use server";
 
+import { hash } from "bcrypt";
 import prisma from "./prisma";
 import { getCurrentUser } from "./session";
 
@@ -155,4 +156,58 @@ export async function getUserFollowing(userId: string) {
     console.log(error);
     throw new Error("Something went wrong");
   }
+}
+
+export async function updateUsername(input: { username: string }) {
+  const currentUser = await getCurrentUser();
+
+  if (!currentUser) throw new Error("Not logged in");
+
+  const exists = await prisma.user.findUnique({
+    where: {
+      username: input.username,
+    },
+  });
+
+  if (exists) throw new Error("Username is taken");
+
+  await prisma.user.update({
+    where: {
+      id: currentUser.uid,
+    },
+    data: {
+      username: input.username,
+    },
+  });
+
+  return true;
+}
+
+export async function updatePassword(input: { password: string }) {
+  const currentUser = await getCurrentUser();
+
+  if (!currentUser) throw new Error("Not logged in");
+
+  const hashedPassword = await hash(input.password, 10);
+
+  await prisma.user.update({
+    where: {
+      id: currentUser.uid,
+    },
+    data: {
+      password: hashedPassword,
+    },
+  });
+
+  return true;
+}
+
+export async function getUser(userId: string) {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+
+  return user;
 }

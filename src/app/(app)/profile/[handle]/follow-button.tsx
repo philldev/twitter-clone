@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useSession } from "@/app/(app)/session-provider";
 import { useState } from "react";
 import { followUser } from "@/lib/user";
 import { useToast } from "@/components/ui/use-toast";

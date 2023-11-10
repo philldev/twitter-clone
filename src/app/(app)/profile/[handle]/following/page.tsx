@@ -2,7 +2,7 @@ import { getProfile } from "@/lib/profile";
 import { Button } from "@/components/ui/button";
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getUserFollowers, getUserFollowing } from "@/lib/user";
+import { getUserFollowing } from "@/lib/user";
 import Link from "next/link";
 
 export default async function Page({ params }: { params: { handle: string } }) {

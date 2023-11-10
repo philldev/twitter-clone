@@ -12,6 +12,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   username: z.string().min(2, {
@@ -31,11 +33,18 @@ export function SignInForm() {
     },
   });
 
+  const router = useRouter();
+
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    console.log(values);
+    await signIn("credentials", {
+      ...values,
+      redirect: false,
+    });
+
+    router.refresh();
   }
 
   return (
@@ -65,7 +74,9 @@ export function SignInForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">Sign in</Button>
+        <Button type="submit">
+          {form.formState.isSubmitting ? "Signing in..." : "Sign in"}
+        </Button>
       </form>
     </Form>
   );
