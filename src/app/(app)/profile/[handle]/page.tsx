@@ -12,13 +12,29 @@ import {
 } from "@/components/ui/dialog";
 import { ProfileForm } from "./profile-form";
 import { Tweets } from "@/components/tweets";
+import { getCurrentUser } from "@/lib/session";
+import { FollowButton } from "./follow-button";
+import {
+  getFollowerCount,
+  getFollowingCount,
+  getIsFollowing,
+} from "@/lib/user";
+import Link from "next/link";
 
 export default async function Page({ params }: { params: { handle: string } }) {
   const { handle } = params;
 
   const profile = await getProfile(handle);
+  const currentUser = await getCurrentUser();
 
+  if (!currentUser) throw new Error("Not logged in!");
   if (!profile) throw new Error("User not found!");
+
+  const isFollowing = await getIsFollowing(profile.userId);
+  const followerCount = await getFollowerCount(profile.userId);
+  const followingCount = await getFollowingCount(profile.userId);
+
+  console.log({ isFollowing });
 
   return (
     <div className="flex flex-col gap-4 py-6">
@@ -29,20 +45,11 @@ export default async function Page({ params }: { params: { handle: string } }) {
             {getUserInitials(profile?.user.username || "")}
           </AvatarFallback>
         </Avatar>
-        <div className="flex w-full justify-between flex-1 text-sm items-center">
-          <div className="text-center">
-            <div className="font-bold">Tweets</div>
-            <div>0</div>
-          </div>
-          <div className="text-center">
-            <div className="font-bold">Followers</div>
-            <div>0</div>
-          </div>
-          <div className="text-center">
-            <div className="font-bold">Following</div>
-            <div>0</div>
-          </div>
-        </div>
+      </div>
+      <div className="px-4 flex justify-center">
+        {currentUser.uid !== profile.userId && (
+          <FollowButton isFollowing={isFollowing} userId={profile.userId} />
+        )}
       </div>
       <div className="px-4 flex flex-col gap-2">
         <div>
@@ -53,6 +60,22 @@ export default async function Page({ params }: { params: { handle: string } }) {
         >
           {profile?.bio ?? "Bio empty"}
         </div>
+      </div>
+      <div className="px-4 text-sm flex gap-4">
+        <Link
+          href={`/profile/${handle}/followers`}
+          className="flex hover:underline gap-1"
+        >
+          <div className="font-bold">{followerCount}</div>
+          <div className="text-muted-foreground">Followers</div>
+        </Link>
+        <Link
+          href={`/profile/${handle}/following`}
+          className="flex hover:underline gap-1"
+        >
+          <div className="font-bold">{followingCount}</div>
+          <div className="text-muted-foreground">Following</div>
+        </Link>
       </div>
       <div className="px-4">
         <EditProfile />

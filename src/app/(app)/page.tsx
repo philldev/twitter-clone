@@ -1,4 +1,5 @@
 import { Tweets } from "@/components/tweets";
+import { Separator } from "@/components/ui/separator";
 
 export default function Page() {
   return (

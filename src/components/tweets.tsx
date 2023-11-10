@@ -13,7 +13,6 @@ type ITweets = Awaited<ReturnType<typeof getTweets>>;
 type ITweet = ITweets[number];
 
 function Tweets({ userId }: { userId?: string }) {
-  console.log({ userId });
   const { toast } = useToast();
   const [tweets, setTweets] = useState<ITweets>([]);
   const [loading, setLoading] = useState(true);
@@ -41,10 +40,11 @@ function Tweets({ userId }: { userId?: string }) {
           setTweets(data);
         }
       } else {
-        toast({
-          title: "Opps",
-          description: "No more tweets to load :(",
-        });
+        if (loadMore)
+          toast({
+            title: "Opps",
+            description: "No more tweets to load :(",
+          });
         setEnableFetchMore(false);
       }
     } catch (error) {
@@ -104,7 +104,7 @@ function Tweets({ userId }: { userId?: string }) {
 
 function TweetCard({ tweet }: { tweet: ITweet }) {
   return (
-    <div className="flex gap-2 py-3">
+    <div className="flex gap-2 pt-4 pb-3">
       <Link href={`/profile/${tweet.user.username}`}>
         <Avatar className="w-8 h-8 shrink-0">
           <AvatarImage src={tweet.user.profile?.avatar_url || ""} />

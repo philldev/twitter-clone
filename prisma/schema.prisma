@@ -18,8 +18,19 @@ model User {
   username String @unique
   password String
 
-  profile Profile?
-  tweets  Tweet[]
+  profile   Profile?
+  tweets    Tweet[]
+  followers Follows[] @relation("following")
+  following Follows[] @relation("follower")
+}
+
+model Follows {
+  follower    User   @relation("follower", fields: [followerId], references: [id])
+  followerId  String
+  following   User   @relation("following", fields: [followingId], references: [id])
+  followingId String
+
+  @@id([followerId, followingId])
 }
 
 model Profile {

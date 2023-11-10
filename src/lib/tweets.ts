@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import prisma from "./prisma";
 import { getCurrentUser } from "./session";
 
@@ -47,8 +48,6 @@ export async function getTweets({
 
 export async function createTweet(content: string) {
   const currentUser = await getCurrentUser();
-
-  console.log({ currentUser });
 
   if (!currentUser) throw new Error("Not logged in");
 
