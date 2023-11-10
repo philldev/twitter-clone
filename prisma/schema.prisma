@@ -28,6 +28,7 @@ model Profile {
 
   avatar_url String?
   bio        String?
+  gender     String?
 
   user   User   @relation(fields: [userId], references: [id])
   userId String @unique

@@ -1,6 +1,8 @@
 import { getCurrentUser } from "@/lib/session";
 import { redirect } from "next/navigation";
 import React from "react";
+import { Header } from "./header";
+import { SessionProvider } from "./session-provider";
 
 export default async function Layout({
   children,
@@ -11,5 +13,12 @@ export default async function Layout({
 
   if (!user) redirect("/login");
 
-  return <div>{children}</div>;
+  return (
+    <SessionProvider user={user}>
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        {children}
+      </div>
+    </SessionProvider>
+  );
 }

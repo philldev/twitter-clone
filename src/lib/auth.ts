@@ -3,7 +3,11 @@
 import { hash } from "bcrypt";
 import prisma from "./prisma";
 
-export async function signUp(input: { username: string; password: string }) {
+export async function signUp(input: {
+  username: string;
+  password: string;
+  gender: "male" | "female";
+}) {
   const userExists = await prisma.user.findUnique({
     select: {
       id: true,
@@ -27,6 +31,14 @@ export async function signUp(input: { username: string; password: string }) {
       data: {
         username: input.username,
         password: hashedPassword,
+        profile: {
+          create: {
+            gender: input.gender,
+            avatar_url: `https://avatar.iran.liara.run/public/${
+              input.gender === "male" ? "boy" : "girl"
+            }?username=${input.username}`,
+          },
+        },
       },
     });
     return {
