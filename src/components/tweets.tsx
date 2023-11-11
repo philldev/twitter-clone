@@ -1,14 +1,15 @@
 "use client";
 
-import { getTweets } from "@/lib/tweets";
+import { getTweets, likeTweet } from "@/lib/tweets";
 import { useEffect, useState } from "react";
 import { useToast } from "./ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { getUserInitials } from "@/lib/utils";
+import { formatNumber, getUserInitials } from "@/lib/utils";
 import { formatRelative } from "date-fns";
 import Link from "next/link";
 import { HeartFilledIcon, HeartIcon } from "@radix-ui/react-icons";
+import { useSession } from "@/app/(app)/session-provider";
 
 type ITweets = Awaited<ReturnType<typeof getTweets>>;
 type ITweet = ITweets[number];
@@ -134,18 +135,55 @@ function TweetCard({ tweet }: { tweet: ITweet }) {
         </div>
         <div className="text-foreground/70 text-sm">{tweet.content}</div>
         <div>
-          <LikeButton />
+          <LikeButton
+            tweetId={tweet.id}
+            liked={tweet.liked}
+            count={tweet.likeCount}
+          />
         </div>
       </div>
     </div>
   );
 }
 
-function LikeButton({ liked }: { liked?: boolean }) {
+function LikeButton({
+  liked,
+  tweetId,
+  count,
+}: {
+  liked?: boolean;
+  tweetId: string;
+  count: number;
+}) {
   const [_liked, setLiked] = useState(liked);
+  const [_count, setCount] = useState(count);
+  const { user } = useSession();
+  const { toast } = useToast();
 
-  const handleClick = () => {
+  const handleClick = async () => {
     setLiked((p) => !p);
+    if (count < 999) {
+      if (_liked && _count > 0) {
+        setCount((p) => p - 1);
+      } else if (!_liked) {
+        setCount((p) => p + 1);
+      }
+    }
+
+    try {
+      await likeTweet({
+        userId: user.uid,
+        tweetId,
+      });
+    } catch (error) {
+      console.log(error);
+      toast({
+        title: "Error",
+        description: "Something went wrong!",
+      });
+
+      setLiked((p) => !p);
+    }
   };
 
   return (
@@ -154,7 +192,7 @@ function LikeButton({ liked }: { liked?: boolean }) {
       className="flex gap-1 text-[0.8rem] text-muted-foreground items-center"
     >
       {_liked ? <HeartFilledIcon /> : <HeartIcon className="" />}
-      <span>10k</span>
+      <span>{formatNumber(_count)}</span>
     </button>
   );
 }

@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import prisma from "./prisma";
 import { getCurrentUser } from "./session";
 
@@ -11,7 +10,9 @@ export async function getTweets({
   userId?: string;
   cursorId?: string;
 } = {}) {
-  const tweets = await prisma.tweet.findMany({
+  const currentUser = await getCurrentUser();
+
+  let tweets = await prisma.tweet.findMany({
     where: {
       userId,
     },
@@ -43,7 +44,36 @@ export async function getTweets({
     },
   });
 
-  return tweets;
+  if (currentUser) {
+    tweets = await Promise.all(
+      tweets.map(async (t) => {
+        const liked = await prisma.tweetLike.findUnique({
+          where: {
+            userId_tweetId: {
+              tweetId: t.id,
+              userId: currentUser.uid,
+            },
+          },
+        });
+
+        const likeCount = await prisma.tweetLike.count({
+          where: {
+            tweetId: t.id,
+          },
+        });
+
+        return {
+          liked: !!liked,
+          likeCount,
+          ...t,
+        };
+      }),
+    );
+  }
+
+  type Tweet = (typeof tweets)[number] & { liked?: boolean; likeCount: number };
+
+  return tweets as Tweet[];
 }
 
 export async function createTweet(content: string) {
@@ -59,4 +89,37 @@ export async function createTweet(content: string) {
   });
 
   return true;
+}
+
+export async function likeTweet(input: { userId: string; tweetId: string }) {
+  try {
+    const liked = await prisma.tweetLike.findUnique({
+      where: {
+        userId_tweetId: {
+          ...input,
+        },
+      },
+    });
+
+    if (liked) {
+      await prisma.tweetLike.delete({
+        where: {
+          userId_tweetId: {
+            ...input,
+          },
+        },
+      });
+    } else {
+      await prisma.tweetLike.create({
+        data: {
+          ...input,
+        },
+      });
+    }
+
+    return true;
+  } catch (error) {
+    console.log(error);
+    throw new Error("Something went wrong!");
+  }
 }

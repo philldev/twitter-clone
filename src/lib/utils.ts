@@ -17,3 +17,9 @@ export function getUserInitials(username: string) {
 
   return first[0];
 }
+
+const numberFormatter = Intl.NumberFormat("en", { notation: "compact" });
+
+export function formatNumber(number: number) {
+  return numberFormatter.format(number);
+}
