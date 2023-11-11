@@ -121,7 +121,10 @@ function TweetCard({ tweet }: { tweet: ITweet }) {
       </Link>
       <div className="flex-1 flex flex-col gap-1">
         <div className="flex text-xs items-center justify-between gap-4">
-          <Link href={`/profile/${tweet.user.username}`} className="font-bold">
+          <Link
+            href={`/profile/${tweet.user.username}`}
+            className="font-medium text-muted-foreground"
+          >
             @{tweet.user.username}
           </Link>
           <div className="text-muted-foreground text-[0.6rem]">

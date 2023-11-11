@@ -15,9 +15,11 @@ export default async function Layout({
 
   return (
     <SessionProvider user={user}>
-      <div className="min-h-screen flex flex-col pb-[70px]">
+      <div className="min-h-screen flex flex-col">
         <Header />
-        {children}
+        <main className="max-w-2xl w-full mx-auto border-x flex-1">
+          {children}
+        </main>
       </div>
     </SessionProvider>
   );

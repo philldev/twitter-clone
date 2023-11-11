@@ -50,6 +50,8 @@ function NewTweetForm({
         title: "Success",
         description: "Tweet created!",
       });
+
+      form.reset();
     } catch (error) {
       console.log(error);
       toast({
