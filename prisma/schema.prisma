@@ -55,8 +55,9 @@ model Tweet {
   content String
   likes   TweetLike[]
 
-  user   User   @relation(fields: [userId], references: [id])
-  userId String
+  user    User         @relation(fields: [userId], references: [id])
+  userId  String
+  replies TweetReply[] @relation("replies")
 }
 
 model TweetLike {
@@ -67,4 +68,13 @@ model TweetLike {
   user  User  @relation(fields: [userId], references: [id])
 
   @@id([userId, tweetId])
+}
+
+model TweetReply {
+  tweetId String
+
+  reply   Tweet  @relation("replies", fields: [replyId], references: [id])
+  replyId String
+
+  @@id([tweetId, replyId])
 }
