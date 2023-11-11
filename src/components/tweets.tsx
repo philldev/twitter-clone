@@ -112,7 +112,7 @@ function Tweets({ userId }: { userId?: string }) {
 
 function TweetCard({ tweet }: { tweet: ITweet }) {
   return (
-    <div className="flex gap-2 pt-4 pb-3">
+    <Link href={`/tweet/${tweet.id}`} className="flex gap-2 pt-4 pb-3">
       <Link href={`/profile/${tweet.user.username}`}>
         <Avatar className="w-8 h-8 shrink-0">
           <AvatarImage src={tweet.user.profile?.avatar_url || ""} />
@@ -142,7 +142,7 @@ function TweetCard({ tweet }: { tweet: ITweet }) {
           />
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
 

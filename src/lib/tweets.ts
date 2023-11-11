@@ -3,6 +3,61 @@
 import prisma from "./prisma";
 import { getCurrentUser } from "./session";
 
+export async function getTweet(tweetId: string) {
+  const currentUser = await getCurrentUser();
+
+  let tweet = await prisma.tweet.findUnique({
+    where: {
+      id: tweetId,
+    },
+    select: {
+      id: true,
+      content: true,
+      createdAt: true,
+      userId: true,
+      user: {
+        select: {
+          username: true,
+          profile: {
+            select: {
+              avatar_url: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  let liked = false;
+
+  if (!tweet) throw new Error("Tweet not found");
+  if (currentUser) {
+    const tweetLike = await prisma.tweetLike.findUnique({
+      where: {
+        userId_tweetId: {
+          tweetId: tweet.id,
+          userId: currentUser.uid,
+        },
+      },
+    });
+    liked = !!tweetLike;
+  }
+
+  const likeCount = await prisma.tweetLike.count({
+    where: {
+      tweetId: tweet.id,
+    },
+  });
+
+  type Tweet = typeof tweet & { liked?: boolean; likeCount: number };
+
+  return {
+    ...tweet,
+    likeCount,
+    liked,
+  } as Tweet;
+}
+
 export async function getTweets({
   userId,
   cursorId,
