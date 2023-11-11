@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { getUserInitials } from "@/lib/utils";
 import { formatRelative } from "date-fns";
 import Link from "next/link";
+import { HeartFilledIcon, HeartIcon } from "@radix-ui/react-icons";
 
 type ITweets = Awaited<ReturnType<typeof getTweets>>;
 type ITweet = ITweets[number];
@@ -132,8 +133,29 @@ function TweetCard({ tweet }: { tweet: ITweet }) {
           </div>
         </div>
         <div className="text-foreground/70 text-sm">{tweet.content}</div>
+        <div>
+          <LikeButton />
+        </div>
       </div>
     </div>
+  );
+}
+
+function LikeButton({ liked }: { liked?: boolean }) {
+  const [_liked, setLiked] = useState(liked);
+
+  const handleClick = () => {
+    setLiked((p) => !p);
+  };
+
+  return (
+    <button
+      onClick={handleClick}
+      className="flex gap-1 text-[0.8rem] text-muted-foreground items-center"
+    >
+      {_liked ? <HeartFilledIcon /> : <HeartIcon className="" />}
+      <span>10k</span>
+    </button>
   );
 }
 
