@@ -14,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/use-toast";
 
 const formSchema = z.object({
   username: z.string().min(2, {
@@ -34,17 +35,32 @@ export function SignInForm() {
   });
 
   const router = useRouter();
+  const { toast } = useToast();
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    await signIn("credentials", {
-      ...values,
-      redirect: false,
-    });
+    try {
+      const response = await signIn("credentials", {
+        ...values,
+        redirect: false,
+      });
 
-    router.refresh();
+      console.log(response);
+
+      if (response?.status === 401) {
+        toast({
+          title: "Error",
+          description: "Invalid username or password",
+          variant: "destructive",
+        });
+      }
+
+      router.refresh();
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   return (

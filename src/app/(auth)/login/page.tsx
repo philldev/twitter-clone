@@ -12,7 +12,7 @@ import { SignupForm } from "./signup-form";
 
 export default function Page() {
   return (
-    <Tabs defaultValue="signin" className="w-[400px]">
+    <Tabs defaultValue="signin" className="max-w-[400px] w-full">
       <TabsList className="grid w-full grid-cols-2">
         <TabsTrigger value="signin">Sign in</TabsTrigger>
         <TabsTrigger value="signup">Sign up</TabsTrigger>
