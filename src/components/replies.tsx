@@ -1,7 +1,7 @@
 "use client";
 
-import { getTweets, likeTweet } from "@/lib/tweets";
-import React, { useEffect, useState } from "react";
+import { getReplies, likeTweet } from "@/lib/tweets";
+import { useEffect, useState } from "react";
 import { useToast } from "./ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -16,25 +16,25 @@ import {
 import { useSession } from "@/app/(app)/session-provider";
 import { useRouter } from "next/navigation";
 
-type ITweets = Awaited<ReturnType<typeof getTweets>>;
-type ITweet = ITweets[number];
+type IReplies = Awaited<ReturnType<typeof getReplies>>;
+type IReply = IReplies[number];
 
-function Tweets({ userId }: { userId?: string }) {
+function Replies({ tweetId }: { tweetId: string }) {
   const { toast } = useToast();
-  const [tweets, setTweets] = useState<ITweets>([]);
+  const [tweets, setTweets] = useState<IReplies>([]);
   const [loading, setLoading] = useState(true);
   const [cursorId, setCursorId] = useState<string>();
   const [enableFetchMore, setEnableFetchMore] = useState(false);
 
   const fetchTweets = async (
-    userId?: string,
+    tweetId: string,
     cursorId?: string,
     loadMore?: boolean,
   ) => {
     setLoading(true);
     try {
-      const data = await getTweets({
-        userId,
+      const data = await getReplies({
+        tweetId: tweetId,
         cursorId,
       });
 
@@ -65,16 +65,16 @@ function Tweets({ userId }: { userId?: string }) {
   };
 
   const fetchMore = () => {
-    fetchTweets(userId, cursorId, true);
+    fetchTweets(tweetId, cursorId, true);
   };
 
   useEffect(() => {
-    fetchTweets(userId);
-  }, [userId]);
+    fetchTweets(tweetId);
+  }, [tweetId]);
 
   useEffect(() => {
     const cb = () => {
-      fetchTweets(userId);
+      fetchTweets(tweetId);
     };
     if (typeof window !== undefined) {
       window.addEventListener("create-tweet", cb);
@@ -84,10 +84,10 @@ function Tweets({ userId }: { userId?: string }) {
         window.removeEventListener("create-tweet", cb);
       }
     };
-  }, [userId]);
+  }, [tweetId]);
 
   return (
-    <div className="px-4 py-4">
+    <div className="py-4">
       {loading && (
         <div className="flext text-muted-foreground">Loading tweets...</div>
       )}
@@ -96,7 +96,7 @@ function Tweets({ userId }: { userId?: string }) {
       )}
       <div>
         {tweets.map((t) => (
-          <TweetCard key={t.id} tweet={t} />
+          <ReplyCard key={t.id} tweet={t} />
         ))}
       </div>
       {tweets.length > 8 && (
@@ -115,7 +115,7 @@ function Tweets({ userId }: { userId?: string }) {
   );
 }
 
-function TweetCard({ tweet }: { tweet: ITweet }) {
+function ReplyCard({ tweet }: { tweet: IReply }) {
   const router = useRouter();
 
   return (
@@ -152,6 +152,7 @@ function TweetCard({ tweet }: { tweet: ITweet }) {
             liked={tweet.liked}
             count={tweet.likeCount}
           />
+
           <button className="flex gap-1 text-[0.8rem] text-muted-foreground items-center">
             <ChatBubbleIcon />
             <span>{formatNumber(tweet._count.replies)}</span>
@@ -176,9 +177,7 @@ function LikeButton({
   const { user } = useSession();
   const { toast } = useToast();
 
-  const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-
+  const handleClick = async () => {
     setLiked((p) => !p);
     if (count < 999) {
       if (_liked && _count > 0) {
@@ -215,4 +214,4 @@ function LikeButton({
   );
 }
 
-export { Tweets };
+export { Replies };
