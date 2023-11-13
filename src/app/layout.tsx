@@ -20,7 +20,6 @@ export default function RootLayout({
       <body className={inter.className}>
         {children}
         <Toaster />
-        <div>This app is experimental projects. by @deddywolley</div>
       </body>
     </html>
   );

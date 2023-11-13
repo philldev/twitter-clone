@@ -8,7 +8,7 @@ export default async function Page() {
 
   if (!currentUser) throw new Error("Not logged in");
 
-  const profile = await getProfile(currentUser?.username);
+  const profile = await getProfile(currentUser.username);
 
   if (!profile) throw new Error("Profile not found");
 

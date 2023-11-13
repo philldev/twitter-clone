@@ -12,13 +12,12 @@ import {
 import { formatRelative } from "date-fns";
 import { useSession } from "@/app/(app)/session-provider";
 import { useState } from "react";
+import { TweetSettingButton } from "@/components/tweet-setting-button";
 
 type ITweet = Awaited<ReturnType<typeof getTweet>>;
 
 function TweetCard({ tweet }: { tweet: ITweet }) {
   const isReply = !!tweet.replyParent;
-
-  console.log(tweet);
 
   return (
     <div className="py-4">
@@ -70,8 +69,11 @@ function TweetCard({ tweet }: { tweet: ITweet }) {
               {getUserInitials(tweet.user.username)}
             </AvatarFallback>
           </Avatar>
-          <div className="font-medium text-muted-foreground">
-            @{tweet.user.username}
+          <div className="flex flex-1 justify-between">
+            <div className="font-medium text-muted-foreground">
+              @{tweet.user.username}
+            </div>
+            <TweetSettingButton ownerId={tweet.userId} tweetId={tweet.id} />
           </div>
         </div>
         <div className="text-foreground/70 text-lg">{tweet.content}</div>

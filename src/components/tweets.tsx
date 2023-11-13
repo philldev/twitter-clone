@@ -11,12 +11,10 @@ import Link from "next/link";
 import {
   ChatBubbleIcon,
   DotFilledIcon,
-  DotIcon,
   HeartFilledIcon,
   HeartIcon,
 } from "@radix-ui/react-icons";
 import { useSession } from "@/app/(app)/session-provider";
-import { useRouter } from "next/navigation";
 import { TweetSettingButton } from "./tweet-setting-button";
 
 type ITweets = Awaited<ReturnType<typeof getTweets>>;

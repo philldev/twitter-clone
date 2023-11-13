@@ -17,8 +17,6 @@ export default async function Page({ params }: { params: { id: string } }) {
 
   const profile = await getProfile(currentUser.username);
 
-  console.log({ profile });
-
   return (
     <div className="py-4">
       <div className="px-4 items-center flex gap-4">

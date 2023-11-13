@@ -8,12 +8,21 @@ export const authOptions: AuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    session: async ({ session, token }) => {
+    session: async ({ session, token, user }) => {
       if (session?.user) {
         session.user.uid = token.sub!;
         session.user.username = token.username! as string;
       }
       return session;
+    },
+    jwt: async ({ token, user, account }) => {
+      // Add custom metadata to the JWT payload
+
+      if (account) {
+        token.username = user.username as string;
+      }
+
+      return token;
     },
   },
   providers: [
