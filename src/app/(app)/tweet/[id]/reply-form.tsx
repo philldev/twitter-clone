@@ -55,7 +55,7 @@ function ReplyForm({
 
       router.refresh();
 
-      window.dispatchEvent(new CustomEvent("create-tweet"));
+      window.dispatchEvent(new CustomEvent("fetch-tweet"));
 
       toast({
         title: "Success",

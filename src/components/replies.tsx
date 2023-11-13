@@ -10,11 +10,13 @@ import { formatRelative } from "date-fns";
 import Link from "next/link";
 import {
   ChatBubbleIcon,
+  DotFilledIcon,
   HeartFilledIcon,
   HeartIcon,
 } from "@radix-ui/react-icons";
 import { useSession } from "@/app/(app)/session-provider";
 import { useRouter } from "next/navigation";
+import { TweetSettingButton } from "./tweet-setting-button";
 
 type IReplies = Awaited<ReturnType<typeof getReplies>>;
 type IReply = IReplies[number];
@@ -77,14 +79,34 @@ function Replies({ tweetId }: { tweetId: string }) {
       fetchTweets(tweetId);
     };
     if (typeof window !== undefined) {
-      window.addEventListener("create-tweet", cb);
+      window.addEventListener("fetch-tweet", cb);
     }
     return () => {
       if (typeof window !== undefined) {
-        window.removeEventListener("create-tweet", cb);
+        window.removeEventListener("fetch-tweet", cb);
       }
     };
   }, [tweetId]);
+
+  useEffect(() => {
+    const cb = (e: Event) => {
+      if (e instanceof CustomEvent) {
+        if (e.detail.id) {
+          setTweets((p) => p.filter((i) => i.id !== e.detail.id));
+        }
+      }
+    };
+
+    if (typeof window !== undefined) {
+      window.addEventListener("delete-tweet", cb);
+    }
+
+    return () => {
+      if (typeof window !== undefined) {
+        window.removeEventListener("delete-tweet", cb);
+      }
+    };
+  }, []);
 
   return (
     <div className="py-4">
@@ -116,15 +138,8 @@ function Replies({ tweetId }: { tweetId: string }) {
 }
 
 function ReplyCard({ tweet }: { tweet: IReply }) {
-  const router = useRouter();
-
   return (
-    <div
-      onClick={() => {
-        router.push(`/tweet/${tweet.id}`);
-      }}
-      className="flex cursor-pointer gap-2 pt-4 pb-3"
-    >
+    <div className="flex cursor-pointer gap-2 pt-4 pb-3">
       <Link href={`/profile/${tweet.user.username}`}>
         <Avatar className="w-8 h-8 shrink-0">
           <AvatarImage src={tweet.user.profile?.avatar_url || ""} />
@@ -134,29 +149,40 @@ function ReplyCard({ tweet }: { tweet: IReply }) {
         </Avatar>
       </Link>
       <div className="flex-1 flex flex-col gap-1">
-        <div className="flex text-xs items-center justify-between gap-4">
-          <Link
-            href={`/profile/${tweet.user.username}`}
-            className="font-medium text-muted-foreground"
-          >
-            @{tweet.user.username}
-          </Link>
-          <div className="text-muted-foreground text-[0.6rem]">
-            {formatRelative(tweet.createdAt, new Date())}
+        <div className="flex justify-between">
+          <div className="flex text-xs items-center gap-1">
+            <Link
+              href={`/profile/${tweet.user.username}`}
+              className="font-medium text-muted-foreground"
+            >
+              @{tweet.user.username}
+            </Link>
+            <DotFilledIcon className="text-muted-foreground" />
+            <div className="text-muted-foreground text-[0.6rem]">
+              {formatRelative(tweet.createdAt, new Date())}
+            </div>
           </div>
+          <TweetSettingButton ownerId={tweet.userId} tweetId={tweet.id} />
         </div>
-        <div className="text-foreground/70 text-sm">{tweet.content}</div>
+        <Link
+          href={`/tweet/${tweet.id}`}
+          className="text-foreground/70 text-sm"
+        >
+          {tweet.content}
+        </Link>
         <div className="flex gap-4">
           <LikeButton
             tweetId={tweet.id}
             liked={tweet.liked}
             count={tweet.likeCount}
           />
-
-          <button className="flex gap-1 text-[0.8rem] text-muted-foreground items-center">
+          <Link
+            href={`/tweet/${tweet.id}`}
+            className="flex gap-1 text-[0.8rem] text-muted-foreground items-center"
+          >
             <ChatBubbleIcon />
             <span>{formatNumber(tweet._count.replies)}</span>
-          </button>
+          </Link>
         </div>
       </div>
     </div>

@@ -15,6 +15,7 @@ import { z } from "zod";
 import { Textarea } from "@/components/ui/textarea";
 import { useRouter } from "next/navigation";
 import { createTweet } from "@/lib/tweets";
+import { Avatar, AvatarImage } from "./ui/avatar";
 
 const formSchema = z.object({
   content: z
@@ -24,9 +25,11 @@ const formSchema = z.object({
 });
 
 function NewTweetForm({
+  avatarUrl,
   defaultValues,
 }: {
   defaultValues?: z.infer<typeof formSchema>;
+  avatarUrl: string;
 }) {
   const { toast } = useToast();
   const router = useRouter();
@@ -44,7 +47,7 @@ function NewTweetForm({
 
       router.refresh();
 
-      window.dispatchEvent(new CustomEvent("create-tweet"));
+      window.dispatchEvent(new CustomEvent("fetch-tweets"));
 
       toast({
         title: "Success",
@@ -72,10 +75,13 @@ function NewTweetForm({
           control={form.control}
           name="content"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="flex gap-4 p-4">
+              <Avatar className="w-8 h-8 shrink-0">
+                <AvatarImage src={avatarUrl || ""} />
+              </Avatar>
               <FormControl>
                 <Textarea
-                  className="resize-none flex h-20 shadow-none focus:outline-none focus-visible:ring-0 rounded-none border-none"
+                  className="resize-none p-0 flex h-20 shadow-none focus:outline-none focus-visible:ring-0 rounded-none border-none"
                   placeholder="Whats on your mind...??"
                   {...field}
                 />

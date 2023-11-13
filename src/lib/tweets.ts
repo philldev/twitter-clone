@@ -350,3 +350,24 @@ export async function createReply(input: { content: string; tweetId: string }) {
     throw new Error("Something went wrong!");
   }
 }
+
+export async function deleteTweet(input: { tweetId: string }) {
+  try {
+    await prisma.tweetLike.deleteMany({
+      where: {
+        tweetId: input.tweetId,
+      },
+    });
+
+    await prisma.tweet.delete({
+      where: {
+        id: input.tweetId,
+      },
+    });
+
+    return true;
+  } catch (error) {
+    console.log(error);
+    throw new Error("Something went wrong!");
+  }
+}
